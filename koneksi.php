@@ -1,9 +1,9 @@
 <?php
-$host = getenv('DB_HOST') ?: 'localhost';
-$user = getenv('DB_USER') ?: 'maglev.proxy.rlwy.net';
+$host = getenv('DB_HOST') ?: 'maglev.proxy.rlwy.net';
+$user = getenv('DB_USER') ?: 'root';
 $pass = getenv('DB_PASS') ?: 'qKHVsZjpnrmMKuKeDFujKcEnbnuEnXMk';
 $db   = getenv('DB_NAME') ?: 'railway';
-$port = getenv('DB_PORT') ?: 26932 ;                     ;
+$port = getenv('DB_PORT') ?: 26932;
 
 $k = new mysqli($host, $user, $pass, $db, $port);
 
