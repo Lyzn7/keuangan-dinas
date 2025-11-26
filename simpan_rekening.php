@@ -1,3 +1,18 @@
+<?php
+include 'koneksi.php';
+
+$id_subkegiatan = isset($_POST['id_subkegiatan']) ? (int)$_POST['id_subkegiatan'] : 0;
+$kode           = trim($_POST['kode'] ?? '');
+$nama           = trim($_POST['nama'] ?? '');
+$is_active      = isset($_POST['is_active']) ? (int)$_POST['is_active'] : 1;
+
+if (!$id_subkegiatan || $kode === '' || $nama === '') {
+    echo "<script>alert('Input tidak lengkap.'); window.history.back();</script>";
+    exit;
+}
+
+$kode = $k->real_escape_string($kode);
+$nama = $k->real_escape_string($nama);
 
 $cek = $k->query("
     SELECT id_rekening FROM rekening 
@@ -15,7 +30,7 @@ if ($cek->num_rows > 0) {
 }
 
 $sql = "INSERT INTO rekening (id_subkegiatan, kode_rekening, nama_rekening, is_active)
-        VALUES ($id_sub, '$kode', '$nama', $is_active)";
+        VALUES ($id_subkegiatan, '$kode', '$nama', $is_active)";
 
 if ($k->query($sql)) {
     echo "<script>

@@ -1,4 +1,18 @@
-$active   = (int)$_POST['is_active'];
+<?php
+session_start();
+include 'koneksi.php';
+
+$id_sub = isset($_POST['id_subkegiatan']) ? (int)$_POST['id_subkegiatan'] : 0;
+$id_keg = isset($_POST['id_kegiatan']) ? (int)$_POST['id_kegiatan'] : 0;
+$kode   = $k->real_escape_string($_POST['kode_subkegiatan'] ?? '');
+$nama   = $k->real_escape_string($_POST['nama_subkegiatan'] ?? '');
+$active = isset($_POST['is_active']) ? (int)$_POST['is_active'] : 1;
+
+if (!$id_sub || !$id_keg || $kode === '' || $nama === '') {
+    $_SESSION['flash_msg'] = "Input tidak lengkap.";
+    header("Location: form_edit_subkegiatan.php?id=$id_sub");
+    exit;
+}
 
 $stmt = $k->prepare("
     SELECT id_subkegiatan 

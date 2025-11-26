@@ -1,10 +1,23 @@
-$data = $res->fetch_assoc();
+<?php
+session_start();
+include 'koneksi.php';
 
-if (!$data) {
-    die("Subkegiatan tidak ditemukan.");
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if (!$id) {
+    $_SESSION['flash_msg'] = "ID subkegiatan tidak ditemukan.";
+    header("Location: manajemen_subkegiatan.php");
+    exit;
 }
 
-// Ambil semua kegiatan untuk dropdown
+$res = $k->query("SELECT * FROM subkegiatan WHERE id_subkegiatan = $id LIMIT 1");
+$data = $res ? $res->fetch_assoc() : null;
+
+if (!$data) {
+    $_SESSION['flash_msg'] = "Subkegiatan tidak ditemukan.";
+    header("Location: manajemen_subkegiatan.php");
+    exit;
+}
+
 $keg = $k->query("SELECT id_kegiatan, nama_kegiatan FROM kegiatan WHERE is_active=1 ORDER BY nama_kegiatan");
 ?>
 <!doctype html>

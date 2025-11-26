@@ -1,16 +1,32 @@
+<?php
+session_start();
+include 'koneksi.php';
+
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if (!$id) {
+    $_SESSION['flash_msg'] = "ID anggaran tidak ditemukan.";
+    header("Location: histori.php");
+    exit;
+}
+
+$stmt = $k->prepare("
     SELECT a.*, r.kode_rekening, r.nama_rekening
     FROM anggaran a 
     JOIN rekening r ON r.id_rekening = a.id_rekening
-    WHERE a.id_anggaran = '$id'
+    WHERE a.id_anggaran = ?
+    LIMIT 1
 ");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$data = $stmt->get_result()->fetch_assoc();
+$stmt->close();
 
-if ($q->num_rows == 0) {
-    die("Data tidak ditemukan");
+if (!$data) {
+    $_SESSION['flash_msg'] = "Data anggaran tidak ditemukan.";
+    header("Location: histori.php");
+    exit;
 }
 
-$data = $q->fetch_assoc();
-
-// Ambil Daftar Rekening
 $rekening = $k->query("
     SELECT id_rekening,
            CONCAT(kode_rekening, ' - ', nama_rekening) AS rek

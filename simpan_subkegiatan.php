@@ -1,3 +1,18 @@
+<?php
+include 'koneksi.php';
+
+$id_kegiatan = isset($_POST['id_kegiatan']) ? (int)$_POST['id_kegiatan'] : 0;
+$kode        = trim($_POST['kode'] ?? '');
+$nama        = trim($_POST['nama'] ?? '');
+$is_active   = isset($_POST['is_active']) ? (int)$_POST['is_active'] : 1;
+
+if (!$id_kegiatan || $kode === '' || $nama === '') {
+    echo "<script>alert('Input tidak lengkap.'); window.history.back();</script>";
+    exit;
+}
+
+$kode = $k->real_escape_string($kode);
+$nama = $k->real_escape_string($nama);
 
 $cek = $k->query("
     SELECT id_subkegiatan FROM subkegiatan 

@@ -1,19 +1,32 @@
+<?php
+session_start();
+include 'koneksi.php';
+
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if (!$id) {
+    $_SESSION['flash_msg'] = "ID rekening tidak ditemukan.";
+    header("Location: manajemen_rekening.php");
+    exit;
 }
 
-$id = (int)$_GET['id'];
+$stmt = $k->prepare("SELECT * FROM rekening WHERE id_rekening = ? LIMIT 1");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$rekening = $stmt->get_result()->fetch_assoc();
+$stmt->close();
 
-// Ambil data rekening
-$sql = "SELECT * FROM rekening WHERE id_rekening = $id LIMIT 1";
-$res = $k->query($sql);
-if ($res->num_rows == 0) {
+if (!$rekening) {
     $_SESSION['flash_msg'] = "Rekening tidak ditemukan.";
     header("Location: manajemen_rekening.php");
     exit;
 }
-$rekening = $res->fetch_assoc();
 
-// Ambil daftar subkegiatan
-$subs = $k->query("SELECT id_subkegiatan, nama_subkegiatan FROM subkegiatan ORDER BY nama_subkegiatan");
+$subs = $k->query("
+    SELECT id_subkegiatan, nama_subkegiatan 
+    FROM subkegiatan 
+    WHERE is_active = 1 
+    ORDER BY nama_subkegiatan
+");
 ?>
 <!doctype html>
 <html lang="id">
@@ -48,7 +61,6 @@ $subs = $k->query("SELECT id_subkegiatan, nama_subkegiatan FROM subkegiatan ORDE
                 </select>
             </div>
 
-            <!-- Tambahan: Edit kode rekening -->
             <div class="mb-3">
                 <label class="form-label">Kode Rekening</label>
                 <input type="text" 
@@ -67,7 +79,6 @@ $subs = $k->query("SELECT id_subkegiatan, nama_subkegiatan FROM subkegiatan ORDE
                        required>
             </div>
 
-            <!-- Status -->
             <div class="mb-3">
                 <label class="form-label">Status</label>
                 <select name="is_active" class="form-select">

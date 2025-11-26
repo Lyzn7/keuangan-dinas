@@ -1,3 +1,7 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
 <title>Tambah Program</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>

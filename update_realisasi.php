@@ -1,5 +1,12 @@
+<?php
+include 'koneksi.php';
+header('Content-Type: application/json');
+
+$id      = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+$jenis   = $_POST['jenis'] ?? '';
+$jumlah  = isset($_POST['jumlah']) ? (float)$_POST['jumlah'] : 0;
 $tanggal = isset($_POST['tanggal']) && $_POST['tanggal'] !== '' ? $_POST['tanggal'] : null;
-$note = $_POST['note'] ?? '';
+$note    = $_POST['note'] ?? '';
 
 if (!$id || !$jenis) {
     echo json_encode(["success" => false, "error" => "Parameter tidak lengkap"]);
@@ -10,18 +17,21 @@ $q = null;
 
 switch ($jenis) {
     case 'Realisasi':
-        // Ambil data lama
         $lama = $k->query("SELECT id_rekening, tahun, bulan, jumlah_realisasi 
                         FROM realisasi_detail 
                         WHERE id_detail = $id")
                 ->fetch_assoc();
+
+        if (!$lama) {
+            echo json_encode(["success" => false, "error" => "Data tidak ditemukan"]);
+            exit;
+        }
 
         $id_rekening = $lama['id_rekening'];
         $tahun       = $lama['tahun'];
         $bulan       = $lama['bulan'];
         $nilai_lama  = floatval($lama['jumlah_realisasi']);
 
-        // Ambil anggaran bulanan
         $ag = $k->query("
             SELECT nilai_bulanan 
             FROM anggaran 
@@ -32,7 +42,6 @@ switch ($jenis) {
 
         $nilai_anggaran_bulan = floatval($ag['nilai_bulanan'] ?? 0);
 
-        // Hitung total realisasi bulan ini
         $sum = $k->query("
             SELECT SUM(jumlah_realisasi) AS total 
             FROM realisasi_detail
@@ -42,11 +51,8 @@ switch ($jenis) {
         ")->fetch_assoc();
 
         $total_lama = floatval($sum['total'] ?? 0);
-
-        // Hitung total baru setelah perubahan
         $total_baru = ($total_lama - $nilai_lama) + floatval($jumlah);
 
-        // VALIDASI: Tidak boleh melewati anggaran bulanan
         if ($total_baru > $nilai_anggaran_bulan) {
             echo json_encode([
                 "success" => false,
@@ -54,16 +60,6 @@ switch ($jenis) {
             ]);
             exit;
         }
-
-        // Jika lolos validasi → update
-        if ($tanggal === null) {
-            $q = $k->prepare("UPDATE realisasi_detail SET jumlah_realisasi = ?, tanggal = NULL, catatan = ? WHERE id_detail = ?");
-            $q->bind_param("dsi", $jumlah, $note, $id);
-        } else {
-            $q = $k->prepare("UPDATE realisasi_detail SET jumlah_realisasi = ?, tanggal = ?, catatan = ? WHERE id_detail = ?");
-            $q->bind_param("dssi", $jumlah, $tanggal, $note, $id);
-        }
-        break;
 
         if ($tanggal === null) {
             $q = $k->prepare("UPDATE realisasi_detail SET jumlah_realisasi = ?, tanggal = NULL, catatan = ? WHERE id_detail = ?");
@@ -110,9 +106,9 @@ if ($q->execute()) {
         $qq->bind_param("i", $id);
         $qq->execute();
         $row = $qq->get_result()->fetch_assoc();
-        $response["program"] = $row["nama_program"];
-        $response["kode"] = $row["kode_rekening"];
-        $response["nama_rekening"] = $row["nama_rekening"];
+        $response["program"] = $row["nama_program"] ?? null;
+        $response["kode"] = $row["kode_rekening"] ?? null;
+        $response["nama_rekening"] = $row["nama_rekening"] ?? null;
     }
 
     if ($jenis === 'Anggaran Bulanan') {
@@ -128,9 +124,9 @@ if ($q->execute()) {
         $qq->bind_param("i", $id);
         $qq->execute();
         $row = $qq->get_result()->fetch_assoc();
-        $response["program"] = $row["nama_program"];
-        $response["kode"] = $row["kode_rekening"];
-        $response["nama_rekening"] = $row["nama_rekening"];
+        $response["program"] = $row["nama_program"] ?? null;
+        $response["kode"] = $row["kode_rekening"] ?? null;
+        $response["nama_rekening"] = $row["nama_rekening"] ?? null;
     }
 
     if ($jenis === 'Realisasi') {

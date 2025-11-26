@@ -1,14 +1,32 @@
+<?php
+session_start();
+include 'koneksi.php';
+
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if (!$id) {
+    $_SESSION['flash_msg'] = "ID realisasi tidak ditemukan.";
+    header("Location: histori.php");
+    exit;
+}
+
+$stmt = $k->prepare("
     SELECT rd.*, r.kode_rekening, r.nama_rekening
     FROM realisasi_detail rd
     JOIN rekening r ON r.id_rekening = rd.id_rekening
-    WHERE rd.id_detail = '$id'
+    WHERE rd.id_detail = ?
+    LIMIT 1
 ");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$data = $stmt->get_result()->fetch_assoc();
+$stmt->close();
 
-if ($q->num_rows == 0) die("Data tidak ditemukan");
+if (!$data) {
+    $_SESSION['flash_msg'] = "Data realisasi tidak ditemukan.";
+    header("Location: histori.php");
+    exit;
+}
 
-$data = $q->fetch_assoc();
-
-// Daftar rekening
 $rekening = $k->query("
     SELECT id_rekening,
            CONCAT(kode_rekening,' - ',nama_rekening) AS rek

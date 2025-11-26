@@ -1,13 +1,20 @@
-// Ambil jenis aktif
-$jenis = '';
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+include 'koneksi.php';
+
+$tahun = isset($_GET['tahun']) ? (int)$_GET['tahun'] : (int)date('Y');
+$bulan = isset($_GET['bulan']) ? (int)$_GET['bulan'] : (int)date('n');
+
+$namaBulan = [1=>"Januari",2=>"Februari",3=>"Maret",4=>"April",5=>"Mei",6=>"Juni",7=>"Juli",8=>"Agustus",9=>"September",10=>"Oktober",11=>"November",12=>"Desember"];
+
+$jenis = 'murni';
 $qJenis = $k->query("SELECT jenis FROM anggaran_jenis_aktif WHERE tahun=$tahun AND bulan=$bulan");
 if ($qJenis && $qJenis->num_rows) {
     $jenis = $qJenis->fetch_row()[0];
-} else {
-    $jenis = 'murni'; // default
 }
 
-// Query data (sama persis dengan monitor.php)
 $sql = "
 SELECT 
     p.nama_program,
@@ -86,3 +93,4 @@ if ($res && $res->num_rows) {
     echo "<tr><td colspan='10'>Tidak ada data</td></tr>";
 }
 echo "</table>";
+?>

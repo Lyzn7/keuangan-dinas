@@ -1,3 +1,11 @@
+<?php
+session_start();
+include 'koneksi.php';
+
+$sql = "SELECT id_program, nama_program 
+        FROM program 
+        WHERE is_active = 1 
+        ORDER BY nama_program";
 $programs = $k->query($sql);
 ?>
 <!doctype html>

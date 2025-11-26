@@ -1,3 +1,10 @@
+<?php
+include 'koneksi.php';
+header('Content-Type: application/json');
+
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$jenis = $_GET['jenis'] ?? '';
+
 if (!$id || !$jenis) {
     echo json_encode(["success" => false, "error" => "Parameter tidak lengkap"]);
     exit;

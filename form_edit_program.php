@@ -1,3 +1,30 @@
+<?php
+session_start();
+include 'koneksi.php';
+
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if (!$id) {
+    $_SESSION['flash_msg'] = "ID program tidak ditemukan.";
+    header("Location: manajemen_program.php");
+    exit;
+}
+
+$stmt = $k->prepare("SELECT * FROM program WHERE id_program = ? LIMIT 1");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$data = $stmt->get_result()->fetch_assoc();
+$stmt->close();
+
+if (!$data) {
+    $_SESSION['flash_msg'] = "Program tidak ditemukan.";
+    header("Location: manajemen_program.php");
+    exit;
+}
+?>
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
 <title>Edit Program</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -33,7 +60,7 @@
     </div>
 
     <div class="col-12 d-flex justify-content-between">
-        <a href="manajemen_subkegiatan.php" class="btn btn-secondary">Batal</a>
+        <a href="manajemen_program.php" class="btn btn-secondary">Batal</a>
         <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
     </div>
 
