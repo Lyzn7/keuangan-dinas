@@ -1,3 +1,12 @@
+<?php
+session_start();
+include 'koneksi.php';
+
+$flash = $_SESSION['flash_msg'] ?? null; unset($_SESSION['flash_msg']);
+
+$sql = "SELECT k.id_kegiatan, k.nama_kegiatan, k.is_active, p.nama_program
+        FROM kegiatan k
+        JOIN program p ON p.id_program = k.id_program
         ORDER BY p.nama_program, k.nama_kegiatan";
 $res = $k->query($sql);
 ?>

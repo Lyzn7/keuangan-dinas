@@ -1,3 +1,9 @@
+<?php
+session_start();
+include 'koneksi.php';
+
+$sql = "SELECT k.id_kegiatan, k.nama_kegiatan, CONCAT(p.nama_program, ' - ', k.nama_kegiatan) AS label
+        FROM kegiatan k
         JOIN program p ON p.id_program = k.id_program
         WHERE k.is_active = 1
         ORDER BY p.nama_program, k.nama_kegiatan";

@@ -1,3 +1,12 @@
+<?php
+session_start();
+include 'koneksi.php';
+
+// Ambil pesan flash jika ada
+$flash = $_SESSION['flash_msg'] ?? null;
+unset($_SESSION['flash_msg']);
+
+// Ambil semua rekening
 $sql = "SELECT r.id_rekening, r.nama_rekening, r.is_active, 
                s.nama_subkegiatan
         FROM rekening r

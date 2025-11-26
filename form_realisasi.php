@@ -1,3 +1,11 @@
+<?php
+session_start();
+include 'koneksi.php';
+
+$sql = "SELECT r.id_rekening, r.kode_rekening, r.nama_rekening,
+               CONCAT(r.kode_rekening,' - ',r.nama_rekening) AS label
+        FROM rekening r
+        JOIN subkegiatan sub ON sub.id_subkegiatan = r.id_subkegiatan
         JOIN kegiatan keg ON keg.id_kegiatan = sub.id_kegiatan
         JOIN program p ON p.id_program = keg.id_program
         WHERE r.is_active = 1

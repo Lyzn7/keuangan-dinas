@@ -1,3 +1,11 @@
+<?php
+session_start();
+include 'koneksi.php';
+
+// =======================
+// Query Anggaran Tahunan
+// =======================
+$sql_tahunan = "
     SELECT at.id, at.tahun, at.jenis, at.nilai_tahunan, at.bulan_mulai, at.bulan_selesai,
            r.kode_rekening, r.nama_rekening
     FROM anggaran_tahunan at
